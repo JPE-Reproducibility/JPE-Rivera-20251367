@@ -28,7 +28,7 @@ downloaded_ok = if !isnothing(url)
     @info "Downloading package from secret Dropbox link..."
     t0 = time()
     try
-        run(`curl -fsSL -o package.zip $url`)
+        run(`curl -fsSL --retry 5 --retry-delay 10 --retry-all-errors --connect-timeout 30 -C - -o package.zip $url`)
         @info "Download complete in $(round(time()-t0, digits=1))s"
         true
     catch e
