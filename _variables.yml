@@ -1,6 +1,11 @@
-title: "Stand-in title"
-author: "Dr Prof James 'JayJay' Author"
-paper_id: 12345678
+title: "Market Response to Racial Uprisings"
+author: "Rivera"
 round: 1
-repo: "https://www.github.com/standin"
-dropbox_rel_path: "JPE/Author-12345678/1"
+repo: "https://github.com/JPE-Reproducibility/JPE-Rivera-20251367"
+paper_id: 20251367
+journal: "JPE"
+paper_slug: "Rivera-20251367"
+dropbox_rel_path: "JPE/Rivera-20251367/1"
+package_size_gb: 43.67
+package_max_file_size_gb: 2
+package_max_pkg_size_gb: 10
