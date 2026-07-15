@@ -19,12 +19,18 @@ vars = YAML.load_file(joinpath(ENV["GITHUB_WORKSPACE"], "_variables.yml"))
 
 dest_path = joinpath(ENV["GITHUB_WORKSPACE"], "replication-package")
 
+# ── Skip fetch entirely if package is already present locally ─────────
+already_have_package = isdir(dest_path) && !isempty(readdir(dest_path))
+
 # ── Remote path: download via public Dropbox link ─────────────────────
 url = let u = get(ENV, "DROPBOX_DOWNLOAD_URL", nothing)
     (isnothing(u) || isempty(u)) ? nothing : u
 end
 
-downloaded_ok = if !isnothing(url)
+downloaded_ok = if already_have_package
+    @info "Package already present at $dest_path — skipping download/copy"
+    true
+elseif !isnothing(url)
     @info "Downloading package from secret Dropbox link..."
     t0 = time()
     try
