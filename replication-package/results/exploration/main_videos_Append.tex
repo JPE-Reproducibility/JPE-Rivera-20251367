@@ -1,0 +1,40 @@
+{
+\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}
+\begin{tabular}{l*{5}{c}}
+\hline\hline
+                    &\multicolumn{1}{c}{(1)}&\multicolumn{1}{c}{(2)}&\multicolumn{1}{c}{(3)}&\multicolumn{1}{c}{(4)}&\multicolumn{1}{c}{(5)}\\
+                    &\multicolumn{1}{c}{\shortstack{Public \\  Areas}}&\multicolumn{1}{c}{\shortstack{Mobile}}&\multicolumn{1}{c}{\shortstack{Drones}}&\multicolumn{1}{c}{\shortstack{Patrol \\ Cars}}&\multicolumn{1}{c}{\shortstack{Weapons}}\\
+\hline \\ \multicolumn{2}{c}{\textbf{Panel A) OLS}} \\\\
+Protest (Std. Dev.) &       0.033\sym{**} &       0.024\sym{*}  &      -0.001         &      -0.029\sym{**} &       0.003         \\
+                    &     (0.015)         &     (0.014)         &     (0.012)         &     (0.015)         &     (0.004)         \\
+\hline
+Mean of Dep.        &        0.41         &        0.20         &        0.23         &        0.53         &        0.03         \\
+Observations        &        1903         &        1903         &        1903         &        1903         &        1903         \\
+\hline\hline
+\end{tabular}
+}
+{
+\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}
+\begin{tabular}{l*{5}{c}}
+ \\ \multicolumn{2}{c}{\textbf{Panel B) IV-Lasso}} \\\\
+Protest (Std. Dev.) &       0.170\sym{**} &       0.208\sym{***}&       0.283\sym{***}&      -0.020         &      -0.008         \\
+                    &     (0.070)         &     (0.063)         &     (0.072)         &     (0.070)         &     (0.019)         \\
+\hline
+Mean of Dep.        &        0.41         &        0.20         &        0.23         &        0.53         &        0.03         \\
+Observations        &        1903         &        1903         &        1903         &        1903         &        1903         \\
+\end{tabular}
+}
+{
+\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}
+\begin{tabular}{l*{5}{c}}
+\hline\hline
+ \\ \multicolumn{2}{c}{\textbf{Panel C) 2SLS}} \\\\
+Protest (Std. Dev.) &       0.175\sym{***}&       0.214\sym{***}&       0.218\sym{***}&      -0.060         &      -0.005         \\
+                    &     (0.056)         &     (0.049)         &     (0.052)         &     (0.058)         &     (0.015)         \\
+\hline
+First-stage F-Stat  &       19.13         &       19.13         &       19.13         &       19.13         &       19.13         \\
+Mean of Dep.        &        0.41         &        0.20         &        0.23         &        0.53         &        0.03         \\
+Observations        &        1903         &        1903         &        1903         &        1903         &        1903         \\
+\hline\hline
+\end{tabular}
+}

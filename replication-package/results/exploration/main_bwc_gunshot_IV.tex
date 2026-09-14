@@ -1,0 +1,18 @@
+{
+\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}
+\begin{tabular}{l*{6}{c}}
+\hline\hline
+                    &\multicolumn{1}{c}{(1)}&\multicolumn{1}{c}{(2)}&\multicolumn{1}{c}{(3)}&\multicolumn{1}{c}{(4)}&\multicolumn{1}{c}{(5)}&\multicolumn{1}{c}{(6)}\\
+                    &\multicolumn{1}{c}{\shortstack{Body Worn \\ Camera}}&\multicolumn{1}{c}{\shortstack{Body Worn \\ Camera}}&\multicolumn{1}{c}{\shortstack{Body Worn \\ Camera}}&\multicolumn{1}{c}{\shortstack{Gunshot \\ Detection Tech.}}&\multicolumn{1}{c}{\shortstack{Gunshot \\ Detection Tech.}}&\multicolumn{1}{c}{\shortstack{Gunshot \\ Detection Tech.}}\\
+\hline
+Protest (Std. Dev.) &      0.0132         &       0.356\sym{***}&       0.276\sym{***}&      0.0419\sym{***}&      0.0827\sym{***}&      0.0731\sym{***}\\
+                    &    (0.0137)         &    (0.0796)         &    (0.0615)         &    (0.0113)         &    (0.0307)         &    (0.0239)         \\
+\hline
+Specification       &         OLS         &    IV-Lasso         &        2SLS         &         OLS         &    IV-Lasso         &        2SLS         \\
+Controls            &         Yes         &         Yes         &         Yes         &         Yes         &         Yes         &         Yes         \\
+First-stage F-Stat  &         ---         &         ---         &       19.13         &         ---         &         ---         &       19.13         \\
+Mean of Dep.        &        0.52         &        0.52         &        0.52         &        0.05         &        0.05         &        0.05         \\
+Observations        &        1903         &        1903         &        1903         &        1903         &        1903         &        1903         \\
+\hline\hline
+\end{tabular}
+}

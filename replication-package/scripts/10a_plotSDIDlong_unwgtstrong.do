@@ -1,0 +1,113 @@
+do "scripts/config.do"
+	
+	****************************************************************************	
+	*Data to convert time to event to month
+	****************************************************************************
+	use "$path_cleaned/placebos_strong_portfolio.dta", clear
+		keep t0 mofd year
+		duplicates drop
+		rename t0 x_sdid
+		keep if year<2021
+	*temporary data	
+	sort x_sdid
+	tempfile date
+	save `date'
+	
+	****************************************************************************	
+	*Collect estimates and SE
+	****************************************************************************
+	use "$path_sdid/4a_unweighted_strong_NA_weak_sumAR.dta"
+		*Collect the effect
+		su b_sdid 
+		global bSDIDstrong =trim("`: display %10.3f `r(mean)''")	
+		su se_sdid 
+		global seSDIDstrong =trim("`: display %10.3f `r(mean)''")
+
+	****************************************************************************	
+	*Strong
+	****************************************************************************
+	*RAW
+	use "$path_sdid/unweighted_monthly_totalstrong_dt.dta",clear
+		*keep relevant
+		keep if type_sdid=="treated"
+		keep Y_sdid x_sdid PID
+		duplicates drop
+		rename Y_sdid  Yraw
+		sort PID x_sdid 	
+	*temporary data	
+	sort PID x_sdid
+	tempfile Yraw_strong
+	save `Yraw_strong'
+	
+	*Synthetic
+	use "$path_sdid/unweighted_monthly_totalstrong_dt.dta",clear
+		*keep relevant
+		keep if type_sdid=="synthetic control"
+		keep Y_sdid x_sdid PID
+		duplicates drop
+		rename Y_sdid  Ysdid
+		sort PID x_sdid 	
+	*temporary data	
+	sort PID x_sdid
+	tempfile Ysdid_strong
+	save `Ysdid_strong'
+	
+		
+	*Merge	
+	use `Yraw_strong'
+		*Merge
+		sort PID x_sdid
+		merge 1:1 PID x_sdid using `Ysdid_strong'
+		keep if _merge==3
+		drop _merge
+	*temporary data	
+	sort PID x_sdid
+	tempfile Strong
+	save `Strong'
+	
+	*Merge date
+	sort x_sdid
+	merge m:1 x_sdid using `date'
+	keep if _merge==3
+	drop _merge
+	
+	*Plot
+	gen portofolio=PID
+	gen tmp= Yraw if x_sdid==0
+	bys PID: egen Yraw0=max(tmp)
+	drop tmp
+	gen tmp= Ysdid if x_sdid==0
+	bys PID: egen Ysdid0=max(tmp)
+	drop tmp
+	
+	*Treatment effect
+	sort PID x_sdid
+	*gen effect=	Yraw-Ysdid
+	gen effect = Yraw-Yraw0-Ysdid+ Ysdid0
+
+	* Plots	
+	local lp
+	forval i=2/102 {
+	   local lp `lp' line effect mofd if portofolio==`i', lcolor(gs11%30) ||
+	}
+	twoway `lp' || ///
+		   (connected effect mofd if portofolio==1,lco(dknavy%70)  mco(dknavy%70) lwidth(medthick)  lpa(solid) msymbol(O) msize(small)), ///
+	       legend(pos(6) ring(1) col(1) row(1) lab(102 "Strong Connection") lab(101 "Placebos") order(101 102))  ///
+		   ylabel(-1.75(.5)1.25) ///
+		   xtitle("Month") ///
+		   ytitle("Treatment Effect") ///
+		   	graphregion(color(white)) bgcolor(white) ///
+			tline(2012m2,lpattern(dash)  lcolor(red) lwidth(medthick) lstyle(foreground)) ///
+			tline(2014m8 2020m5,lwidth(thin) lpa(-) lcolor(red)) ///
+		    ttext(-1.1 2012m2 "Death of Trayvon Martin (C)"                ,margin(vsmall)  orientation(vertical) size(small) placement(w) color(red)) ///		
+			ttext(-1 2014m8 "{&larr} {&larr} Death of Michael Brown (P)" ,margin(vsmall)  size(small) placement(e) color(red)) ///	
+			ttext(1.2 2020m5 "Death of George Floyd (P) {&rarr} {&rarr} " ,margin(vsmall)  size(small) placement(w) color(red)) ///	
+			legend(size(med)) legend(region(lwidth(none))) ///
+			title({bf:A. Strong Connection (Equally Weighted Portfolios)},color(black) pos(1) size(med)) ///
+			subtitle("sdid = $bSDIDstrong" "s.e. =$seSDIDstrong", ///
+				   size(med) position(11) ring(0) color(gs6%90)) 
+	graph export "$path_figures/v3_SDID_CAR_long_equally_strong.pdf",replace
+
+	
+*Save
+save "$path_sdid/long_equally_strong_effect.dta",replace	
