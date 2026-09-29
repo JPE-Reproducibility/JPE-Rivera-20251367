@@ -30,11 +30,11 @@ In assessing compliance with our [Data and Code Availability Policy](https://www
 
 # General
 
--   [ ] Data Availability and Provenance Statements
-    -   [ ] Statement about Rights - Part 1: Right to use the data (e.g. *did the authors lawfully obtain the data*)
-    -   [ ] Statement about Rights - Part 2: Right to publish the data (e.g. *are human subjects involved and did permission been granted to publish their data?*)
-    -   [ ] License for Data (optional, but recommended)
-    -   [ ] Details on each Data Source
+-   [x] Data Availability and Provenance Statements
+    -   [x] Statement about Rights - Part 1: Right to use the data (e.g. *did the authors lawfully obtain the data*)
+    -   [x] Statement about Rights - Part 2: Right to publish the data (e.g. *are human subjects involved and did permission been granted to publish their data?*)
+    -   [x] License for Data (optional, but recommended)
+    -   [x] Details on each Data Source
 -   [x] Dataset list
 -   [x] Computational requirements
     -   [x] Software Requirements
@@ -68,7 +68,7 @@ In assessing compliance with our [Data and Code Availability Policy](https://www
 ## Data Sources
 
 | file/name | public | private | DOI/URL | Access described | cited readme | cited paper |
-|-----------|-----------|-----------|-----------|-----------|-----------|-----------|
+|----|----|----|----|----|----|----|
 | CRSP Daily/Monthly Security Files | no | yes | yes | yes | yes | yes |
 | WRDS Beta Suite (CAPM, FF4) | no | yes | yes | yes | yes | yes |
 | Compustat Fundamentals (Annual, Quarterly) | no | yes | yes | yes | yes | yes |
@@ -427,11 +427,9 @@ In assessing compliance with our [Data and Code Availability Policy](https://www
 # Requirements
 
 -   [x] README is in TXT, MD, or PDF format
--   [ ] README is accessible at the root of the package (not inside a folder)
--   [ ] Title conforms to guidance (starts with "Data and Code for: Title of Paper" or "Code for: Title of Paper", is properly capitalized)
+-   [x] README is accessible at the root of the package (not inside a folder)
+-   [x] Title conforms to guidance (starts with "Data and Code for: Title of Paper" or "Code for: Title of Paper", is properly capitalized)
 -   [x] Authors (with affiliations) are listed in the same order as on the paper
-
-> {REQUIRED} Please review the title of the deposit as per our guidelines.
 
 ## Stated Requirements
 
@@ -439,14 +437,14 @@ In assessing compliance with our [Data and Code Availability Policy](https://www
 -   [x] Software Requirements specified as follows:
     -   Stata 16 or higher (StataSE or StataNow recommended)
     -   R 4.0 or higher
-    -   Python 3.8 or higher (only needed for weather data preprocessing)
+    -   Python 3.8 or higher, reachable from Stata
 -   [x] Computational Requirements specified as follows:
     -   **RAM:** 32 GB minimum (some intermediate daily files exceed 4 GB)
-    -   **Disk:** \~40 GB for full package including intermediate data
+    -   **Disk:** \~50 GB for full package including intermediate data
     -   **OS:** Tested on macOS. Should work on Linux/Windows with appropriate Stata/R installations.
-    -   **Machine used for replication:** Apple M3 Ultra, 256 GB RAM, macOS 26.3, Stata 19 (StataNow), R 4.5.2. Total runtime: approximately 48 hours.
+    -   **Machine used for replication:** Apple M3 Ultra, 256 GB RAM, macOS 26.3, Stata 19 (StataNow), R 4.5.2. Total runtime: approximately 90 hours.
 -   [x] Time Requirements specified as follows:
-    -   48 hours.
+    -   90 hours.
 -   [x] Requirements are complete.
 
 # Analyzing Data and Code Files
@@ -478,27 +476,27 @@ In assessing compliance with our [Data and Code Availability Policy](https://www
 
 # Replication
 
-Example:
-
 -   Downloaded code and data from dropbox to the Nuvolos instance.
 
--   Ran code as per README, but I hit a `R` error indicating that a package was not installed.
+-   Ran code as per README, but I hit some errors, see below.
 
--   I had to run the following in order to install the `synthdid` R package:
+-   I had to give R a writable user library (this is due to the sandbox). Had to run: `bash     mkdir -p ~/R/library     export R_LIBS_USER=~/R/library     R -e '.libPaths()'     R_LIBS_USER=~/R/library Rscript scripts/00_setup.R`
 
-    ``` R
-    install.packages("remotes") install.packages( "mvtnorm", repos = "https://cloud.r-project.org" ) remotes::install_github( "synth-inference/synthdid", dependencies = NA, upgrade = "never" ) I think this may have happened because I am running the package on a container. I tried running setup_00.R locally and it installed everything, although this showed up in the terminal: ℹ The package "remotes" is required. ✖ Would you like to install it?
-    1: Yes 2: No
-    Selection: Yes
+-   Due to sandbox restrictions I had to run: `bash     curl -Ls https://micro.mamba.pm/api/micromamba/linux-64/latest | tar -xvj bin/micromamba     ./bin/micromamba create -p ~/r-geo -c conda-forge r-base=4.3 r-sf r-tidyverse r-data.table r-dplyr r-tidyr r-lubridate r-readxl r-haven r-xtable r-remotes r-mvtnorm r-viridis r-ggextra r-janitor r-fedmatch r-stringdist -y`
+
+-   And then: `bash     ~/r-geo/bin/Rscript scripts/00_setup.R     export PATH="$HOME/r-geo/bin:$PATH"     export R_LIBS_USER=""`
+
+-   
+
+    ```         
+    I had to install `R.utils`:
     ```
 
-    Authors should probably switch `devtools` to `remotes`.
+    `bash     R_LIBS_USER="" ~/r-geo/bin/Rscript -e 'install.packages("R.utils", repos="https://cloud.r-project.org")'`
 
--   Re-ran in step-by-step version of the package (Stata and R separately).
+-   Ran until completion from main script.
 
--   Ran until completion.
-
--   Only a couple of outputs were actually reproduced. I am unable to detect why this happened for those and not for the rest, but the code ran without problem.
+-   All outputs were reproduced, some with discrepancies.
 
 # Findings {#sec-findings}
 
@@ -509,9 +507,57 @@ Example:
 
 ## Tables and Figures
 
--   Only Figures 2, 3, A.11 panel A, and A.17 were reproduced.
--   Only Tables 1, 2, 3, and 4 were reproduced.
--   All the outputs that were reproduced are exactly as in the manuscript (no discrepancies).
+-   Figure 9A: Paper version looks different from the one generated by programs:
+
+::: {#fig-9a layout-ncol="2"}
+![Paper version](images/Captura%20de%20pantalla%202026-09-29%20114928.png)
+
+![Replicated version](images/Captura%20de%20pantalla%202026-09-29%20115006.png)
+
+Figure 9A
+:::
+
+-   Figure 9B: Paper version looks different from the one generated by programs:
+
+::: {#fig-9b layout-ncol="2"}
+![Paper version](images/Captura%20de%20pantalla%202026-09-29%20115137.png)
+
+![Replicated version](images/Captura%20de%20pantalla%202026-09-29%20115158.png)
+
+Figure 9B
+:::
+
+-   Figure A.12A: Paper version looks different from the one generated by programs:
+
+::: {#fig-a12a layout-ncol="2"}
+![Paper version](images/Captura%20de%20pantalla%202026-09-29%20124706.png)
+
+![Replicated version](images/Captura%20de%20pantalla%202026-09-29%20124726.png)
+
+Figure A.12A
+:::
+
+-   Figure A.12B: Paper version looks different from the one generated by programs:
+
+::: {#fig-a12b layout-ncol="2"}
+![Paper version](images/Captura%20de%20pantalla%202026-09-29%20124752.png)
+
+![Replicated version](images/Captura%20de%20pantalla%202026-09-29%20124840.png)
+
+Figure A.12B
+:::
+
+-   Figure A.13: Paper version looks different from the one generated by programs:
+
+::: {#fig-a13 layout-ncol="2"}
+![Paper version](images/Captura%20de%20pantalla%202026-09-29%20125012.png)
+
+![Replicated version](images/Captura%20de%20pantalla%202026-09-29%20125030.png)
+
+Figure A.13
+:::
+
+-   All other outputs are perfectly reproduced.
 
 ## In-Text Numbers
 
@@ -523,21 +569,27 @@ Example:
 
 ## Other Issues
 
--   Note that the path for `fas_IV.pdf` in the REAMDE file should be `results/exploration/fas_IV.pdf`.
+-   Tables A.10 and A.11 are currently hard-coded, they should probably be produced by the code (see below):
+
+::: {#tab-a10a11 layout-ncol="2"}
+![Table A.10](images/Captura%20de%20pantalla%202026-09-29%20130156.png)
+
+![Table A.11](images/Captura%20de%20pantalla%202026-09-29%20130216.png)
+:::
 
 # Classification
 
 -   [ ] full reproduction
--   [ ] full reproduction with minor issues
+-   [x] full reproduction with minor issues
 -   [ ] partial reproduction (see above)
--   [x] not able to reproduce most or all of the results (reasons see above)
+-   [ ] not able to reproduce most or all of the results (reasons see above)
 
 ## Reason for incomplete reproducibility
 
 -   [ ] None.
--   [ ] `Discrepancy in output` (either figures or numbers in tables or text differ)
+-   [x] `Discrepancy in output` (either figures or numbers in tables or text differ)
 -   [ ] `Bugs in code` that were fixable by the replicator (but should be fixed in the final deposit)
--   [x] `Code missing`, in particular if it prevented the replicator from completing the reproducibility check
+-   [ ] `Code missing`, in particular if it prevented the replicator from completing the reproducibility check
     -   [ ] `Data preparation code missing` should be checked if the code missing seems to be data preparation code
 -   [ ] `Code not functional` is more severe than a simple bug: it prevented the replicator from completing the reproducibility check
 -   [ ] `Software not available to replicator` may happen for a variety of reasons, but in particular (a) when the software is commercial, and the replicator does not have access to a licensed copy, or (b) the software is open-source, but a specific version required to conduct the reproducibility check is not available.
